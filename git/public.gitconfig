@@ -1,0 +1,28 @@
+[user]
+    email = youremail@example.com
+    name = yourname
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = false
+
+[core]
+    pager = delta
+    editor = code -w
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    side-by-side = true
+    line-numbers = true
+    syntax-theme = GitHub
+
+[merge]
+    conflictstyle = diff3
+
+[diff]
+    colorMoved = default

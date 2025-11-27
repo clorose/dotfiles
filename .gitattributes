@@ -1,0 +1,4 @@
+# .gitattributes
+
+*.zsh linguist-detectable=false
+*.sh linguist-detectable=false
