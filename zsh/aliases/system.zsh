@@ -14,8 +14,6 @@ alias ..="cd .."               # 위 1단계
 alias ...="cd ../.."           # 위 2단계
 alias ....="cd ../../.."       # 위 3단계
 
-alias ~="cd ~"                 # 홈 디렉토리 이동
-
 alias cl="clear"               # 화면 지우기
 alias re="reset"               # 터미널 리셋
 alias ㄱㄷ="reset"             # 한글 타이핑 실수용
