@@ -1,14 +1,15 @@
 ############################################################
 # 🐙 Git 기본 명령어
 ############################################################
+
 alias gs="git status"
 alias gss="git status -s"
 alias ga="git add"
 alias gaa="git add ."
 alias gc="git commit -m"
-alias gca="git commit --amend"        # 너 스타일 기준 유지
+alias gca="git commit --amend"
 alias gp="git pull"
-alias gps="git push"                  # ⭐ 필수 추가됨
+alias gps="git push" 
 
 ############################################################
 # 🌿 브랜치 관련

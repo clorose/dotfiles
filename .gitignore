@@ -1,5 +1,6 @@
 /zsh/.zshrc
 /git/gitconfig
+diff*.txt
 
 ### macOS ###
 .DS_Store
