@@ -5,12 +5,28 @@
 [init]
     defaultBranch = main
 
+[push]
+    default = simple
+    autoSetupRemote = true
+
 [pull]
     rebase = false
+
+[fetch]
+    prune = true
+
+[branch]
+    sort = -committerdate
 
 [core]
     pager = delta
     editor = code -w
+    whitespace = trailing-space,space-before-tab
+		autocrlf = input
+		quotepath = false
+
+[commit]
+    verbose = true
 
 [interactive]
     diffFilter = delta --color-only
@@ -22,7 +38,17 @@
     syntax-theme = GitHub
 
 [merge]
-    conflictstyle = diff3
+    conflictstyle = zdiff3
 
 [diff]
+    algorithm = histogram
     colorMoved = default
+
+[color]
+    ui = auto
+
+[help]
+    autocorrect = prompt
+
+[rerere]
+    enabled = true
