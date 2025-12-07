@@ -1,6 +1,6 @@
 [user]
-    email = youremail@example.com
-    name = yourname
+    email = gohan9511@gmail.com
+    name = clorose
 
 [init]
     defaultBranch = main
@@ -27,6 +27,7 @@
 
 [commit]
     verbose = true
+    template = ~/.config/git/commit-template.txt
 
 [interactive]
     diffFilter = delta --color-only
