@@ -1,4 +1,11 @@
-# .gitattributes
+# ═══════════════════════════════════════════════════════════════
+# GitHub Linguist Configuration
+# ═══════════════════════════════════════════════════════════════
 
-*.zsh linguist-detectable=false
-*.sh linguist-detectable=false
+# Shell / Zsh - 환경 설정 파일
+*.zsh linguist-vendored
+*.sh linguist-vendored
+.zshrc linguist-vendored
+
+# Brewfile - 패키지 관리 (Ruby 통계 제외)
+Brewfile linguist-vendored
