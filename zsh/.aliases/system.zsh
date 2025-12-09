@@ -9,6 +9,7 @@ alias la="eza -a --icons --group-directories-first"
 alias lt="eza -l --sort=modified --reverse --icons --group-directories-first"
 
 alias tree="eza -T --icons --group-directories-first"
+alias trea="eza -Ta --icons --group-directories-first"
 
 alias ..="cd .."               # 위 1단계
 alias ...="cd ../.."           # 위 2단계
