@@ -1,128 +1,116 @@
 # ✔️ Dotfiles
 
 개인 개발 환경(Zsh 기반)을 위한 dotfiles 저장소입니다.
-Powerlevel10k, fzf, ripgrep, alias 모듈 구조 등을 포함하며 설치 스크립트(sh 파일)로 손쉽게 적용할 수 있습니다.
-
+Powerlevel10k, fzf, ripgrep, alias 모듈 구조 등을 포함하며 설치 스크립트로 빠르게 적용할 수 있습니다.
 
 ---
 
-## 📦 Repository Structure
+## 📦 Features
+
+* Zsh + Powerlevel10k 기본 구성
+* fzf / ripgrep / bat / eza 등 CLI 유틸리티 사용 환경
+* alias 모듈 구조(필요한 기능만 자동 로딩)
+* gitconfig + commit-template 포함
+* Brewfile을 통한 패키지 일괄 설치
+* Nerd Font 제공
+
+---
+
+## 📂 Repository Structure
 
 ```zsh
 dotfiles/
 ├── Fonts/
-│   ├── HackNerdFontMono-Bold.ttf
-│   ├── HackNerdFontMono-BoldItalic.ttf
-│   ├── HackNerdFontMono-Italic.ttf
-│   └── HackNerdFontMono-Regular.ttf
-│
 ├── git/
-│   ├── commit-template.txt
-│   └── gitconfig
-│
-├── sh/                       # (외부 사용자용 설치 스크립트)
-│
+├── sh/               # 설치 스크립트
 ├── zsh/
 │   ├── .zshrc
 │   ├── .p10k.zsh
-│   └── aliases/
-│       ├── docker.zsh
-│       ├── etc.zsh
-│       ├── git.zsh
-│       ├── help.zsh
-│       ├── node.zsh
-│       ├── python.zsh
-│       ├── search.zsh
-│       └── system.zsh
-│
+│   └── aliases/      # 기능별 alias 모듈
 ├── Brewfile
-├── .gitignore
-├── .gitattributes
 └── README.md
 ```
 
 ---
 
-## 🔧 Requirements (필수 구성 요소)
-
-이 dotfiles가 정상적으로 작동하려면 아래 패키지들이 필요합니다.
-
-### **Homebrew 패키지**
+## 🚀 Installation
 
 ```bash
-brew install zsh git fzf fd ripgrep bat eza zoxide vivid zsh-syntax-highlighting
+git clone https://github.com/<username>/dotfiles.git ~/dotfiles
+cd ~/dotfiles/sh
+./install.sh
 ```
 
-### **Framework**
+설치 스크립트는 다음을 수행합니다:
 
-```bash
-# Oh My Zsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-# Powerlevel10k
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-  ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-```
+* dotfiles 심볼릭 링크 생성
+* Brewfile 패키지 설치
+* zsh 관련 설정 적용
+* Nerd Font 설치
 
 ---
 
-## 🚀 Installation (sh 파일 설치 방식)
+## ⚙️ Alias Modules
 
-```bash
-curl -s https://raw.githubusercontent.com/clorose/dotfiles/main/sh/install.sh | bash
+alias는 기능별로 분리되어 있고, `.zshrc`에서 자동으로 조건부 로딩됩니다.
+
+예: docker가 설치된 경우에만 docker.zsh 로딩
+
+```zsh
+if command -v docker >/dev/null 2>&1; then
+    source "$DOTFILES/zsh/aliases/docker.zsh"
+fi
 ```
 
-또는 직접 clone 후 수동으로 링크할 수도 있습니다:
+### 제공 모듈
 
-```bash
-git clone https://github.com/clorose/dotfiles ~/dotfiles
+| 모듈       | 설명                              |
+| ---------- | --------------------------------- |
+| docker.zsh | docker / docker-compose 단축 명령 |
+| git.zsh    | git 관련 alias                    |
+| node.zsh   | node / npm / pnpm 유틸리티        |
+| python.zsh | python / pip 관련 명령            |
+| system.zsh | 시스템 관리(alias / 유틸)         |
+| search.zsh | fd / rg / fzf 관련                |
+| help.zsh   | 헬프 함수 + 정리 기능             |
+| etc.zsh    | 기타 공용 alias                   |
 
-ln -sf ~/dotfiles/zsh/.zshrc ~/.zshrc
-ln -sf ~/dotfiles/zsh/.p10k.zsh ~/.p10k.zsh
-
-mkdir -p ~/.aliases
-ln -sf ~/dotfiles/zsh/aliases/*.zsh ~/.aliases/
-
-mkdir -p ~/.config/git
-ln -sf ~/dotfiles/git/commit-template.txt ~/.config/git/commit-template.txt
-ln -sf ~/dotfiles/git/gitconfig ~/.gitconfig
-```
+필요 없는 모듈은 설치하지 않으면 자동으로 로딩되지 않습니다.
 
 ---
 
-## 🧠 Features
+## 🧩 Zsh Customization
 
-### 🐚 Zsh 환경
+### Powerlevel10k
 
-* Powerlevel10k 프롬프트
-* autosuggestions
-* zsh-syntax-highlighting
-* locale/editor 설정
+설정 파일은 다음 경로에 있습니다:
 
-### 🔍 검색 & 네비게이션
+```
+zsh/.p10k.zsh
+```
 
-* **fzf** 기반 help/search UI
-* **fd + ripgrep** 기반 빠른 파일/텍스트 검색
-* **zoxide** 스마트 cd
-
-### 🎨 색상 테마
-
-* vivid nord 테마로 eza/ls 컬러統一
-
-### 🔧 alias 모듈화
-
-* 시스템/도커/검색/git/node/python 등 기능별 분리된 alias
-* 자동 로드됨 (`~/.aliases/*.zsh`)
-
-### 🧩 Git 설정
-
-* 커밋 템플릿 포함
-* 개인용 gitconfig 제공
+테마 설정은 필요하면 자유롭게 수정하면 됩니다.
 
 ---
 
-## 🎨 Fonts
+## 🛠 Requirements
 
-Powerlevel10k 및 Nerd Font 호환을 위해 Hack Nerd Font Mono 포함.
+* macOS 또는 Linux
+* Homebrew(없으면 install.sh에서 자동 설치)
+* Zsh 5.8+
+
+---
+
+## 📌 Notes
+
+* dotfiles는 symlink 기반으로 설치됩니다.
+* 설치 과정에서 기존 설정 파일이 백업되거나 덮어씌워질 수 있으므로 주의하세요.
+* 모든 alias 모듈은 독립적으로 동작하도록 구성했습니다.
+
+---
+
+## 📜 License
+
+MIT
 
 ---

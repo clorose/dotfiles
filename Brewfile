@@ -1,4 +1,3 @@
-tap "grishka/grishka"
 # General-purpose data compression with high compression ratio
 brew "xz"
 # Bourne-Again SHell, a UNIX command interpreter
@@ -7,8 +6,6 @@ brew "bash"
 brew "bat"
 # Bash scripts that integrate bat with various command-line tools
 brew "bat-extras"
-# Manage your dotfiles across multiple diverse machines, securely
-brew "chezmoi"
 # Cross-platform make
 brew "cmake"
 # Modern, maintained replacement for ls
@@ -47,6 +44,8 @@ brew "ripgrep"
 brew "ripgrep-all"
 # Utility that provides fast incremental file transfer
 brew "rsync"
+# Organize software neatly under a single directory tree (e.g. /usr/local)
+brew "stow"
 # Open source continuous file synchronization application
 brew "syncthing"
 # Extremely fast Python package installer and resolver, written in Rust
@@ -61,14 +60,10 @@ brew "zoxide"
 brew "zsh"
 # Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
-# Desktop password and login vault
-cask "bitwarden"
 cask "font-hack-nerd-font"
 cask "font-pretendard"
 # Minimal installer for conda specific to conda-forge
 cask "miniforge"
-# Unofficial Google Nearby Share app
-cask "neardrop"
 # OpenJDK distribution from Azul
 cask "zulu@17"
 # OpenJDK distribution from Azul
