@@ -8,21 +8,23 @@
 alias uva="uv add"                     # 패키지 추가
 alias uvad="uv add --dev"              # 개발 의존성 추가
 alias uvr="uv remove"                  # 패키지 제거
-alias uvs="uv sync"                    # 의존성/가상환경 동기화
-alias uve="uv export"
-alias uvx="uvx"                        # ruff/mypy 등 실행
+alias uvs="uv sync"                    # 의존성 동기화 (install 대용)
+alias uvlock="uv lock"                 # lock 파일 갱신
+alias uvup="uv lock --upgrade"         # 의존성 전체 최신화
+alias uvtree="uv tree"                 # 의존성 트리 그래프
 
 # --------------------------------------------
-# 🐍 Python 실행
+# 🐍 Python 실행 및 테스트
 # --------------------------------------------
-alias pyr="uv run"                     # uv run (자동 venv)
+alias py="uv run python"               # Python REPL (쉘) 실행
+alias pyr="uv run"                     # 스크립트 실행 (예: pyr main.py)
+alias ptest="uv run pytest"            # 테스트 실행
 
 # --------------------------------------------
 # 🔍 Python 버전 관리
 # --------------------------------------------
-alias uvl="uv python list"             # Python 버전 리스트
-alias uvi="uv python install"          # Python 버전 설치
-alias uvpin="uv python pin"            # Python 버전 고정
+alias uvl="uv python list"             # 사용 가능한 Python 버전 목록
+alias uvi="uv python install"          # Python 버전 다운로드
 
 # --------------------------------------------
 # 📦 프로젝트 초기화
@@ -35,15 +37,15 @@ uvinit() {
         echo "❗ 사용법: uvinit <project-name>"
         return 1
     fi
-    uv init "$1"
-    cd "$1" || exit
+    # exit 대신 return 사용 (터미널 종료 방지)
+    uv init "$1" && cd "$1" || return 1
     echo "✅ uv 프로젝트 생성 완료 → $(pwd)"
 }
 
 # --------------------------------------------
-# 🐍 Python 버전 설치 + 지정
+# 🐍 Python 버전 고정 (Pinning)
 # --------------------------------------------
-# @desc: Python 버전 설치 및 프로젝트에 고정
+# @desc: 현재 프로젝트의 Python 버전 고정 (자동 다운로드 포함)
 # @usage: uvuse <version>
 # @example: uvuse 3.12
 uvuse() {
@@ -52,9 +54,7 @@ uvuse() {
         echo "예) uvuse 3.12"
         return 1
     fi
-    uv python install "$1"
-    echo "$1" > .python-version
-    echo "🐍 Python version set to $1"
+    uv python pin "$1"
 }
 
 # --------------------------------------------
@@ -64,12 +64,12 @@ uvuse() {
 # @usage: uvclean
 uvclean() {
     echo "🧹 Clearing uv cache..."
-    uv cache clean
-    echo "🧼 Done!"
+    uv cache clean && echo "🧼 Done!"
 }
 
 # --------------------------------------------
-# ✨ Linting / Formatting
+# ✨ Ruff (Lint/Format)
 # --------------------------------------------
-alias ruffc="uvx ruff check ."         # ruff 린팅
-alias rufff="uvx ruff format ."        # ruff 포맷팅
+alias ruffc="uvx ruff check ."         # 린트 검사
+alias rufffix="uvx ruff check --fix ." # 린트 자동 수정
+alias rufffmt="uvx ruff format ."      # 코드 포맷팅
