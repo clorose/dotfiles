@@ -9,7 +9,7 @@ alias gaa="git add ."
 alias gc="git commit"
 alias gca="git commit --amend"
 alias goops="git commit --amend --no-edit"
-alias gp="git pull"
+alias gpl="git pull"
 alias gps="git push" 
 
 ############################################################
@@ -49,14 +49,40 @@ alias gstl="git stash list"
 # @desc: main과 develop 브랜치를 순서대로 최신화
 # @usage: gsync
 gsync() {
-    local current_branch=$(git branch --show-current)
-    
-    git checkout main && git pull || return 1
-    git checkout develop && git pull || return 1
-    
-    # 원래 브랜치로 복귀 (feature 브랜치 작업 중이었다면)
-    if [[ "$current_branch" != "develop" && "$current_branch" != "main" ]]; then
-        git checkout "$current_branch"
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    # 1. 안전장치: 수정 중인 파일이 있으면 중단 (Stash/Commit 유도)
+    if ! git diff --quiet || ! git diff --cached --quiet; then
+        echo "⛔️ 수정사항(Uncommitted changes)이 있어 중단합니다."
+        return 1
+    fi
+
+    # 2. Main 브랜치 업데이트
+    if git show-ref --verify --quiet refs/heads/main; then
+        echo "🔄 Syncing main..."
+        git switch main && git pull || return 1
+    fi
+
+    # 3. Master 브랜치 업데이트 (Main과 별개로 체크하여 둘 다 있으면 둘 다 함)
+    if git show-ref --verify --quiet refs/heads/master; then
+        echo "🔄 Syncing master..."
+        git switch master && git pull || return 1
+    fi
+
+    # 4. Develop 브랜치 업데이트
+    if git show-ref --verify --quiet refs/heads/develop; then
+        echo "🔄 Syncing develop..."
+        git switch develop && git pull || return 1
+    fi
+
+    # 5. 원래 브랜치로 복귀 (핵심 수정 사항)
+    # 현재 위치가 시작했던 브랜치와 다르다면, 무조건 원래 브랜치로 이동
+    if [[ "$(git branch --show-current)" != "$current_branch" ]]; then
+        echo "🔙 Returning to $current_branch..."
+        git switch "$current_branch"
+    else
+        echo "✅ Already on $current_branch. Done."
     fi
 }
 
