@@ -1,4 +1,5 @@
 diff*.txt
+local.zsh
 
 ### macOS ###
 .DS_Store
