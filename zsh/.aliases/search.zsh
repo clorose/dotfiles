@@ -1,28 +1,30 @@
 ##############################################
-# 🌲 Global exclude (macOS Library 전체 제외)
+# 🔍 FZF & macOS Utility Toolkit (FINAL)
 ##############################################
+
+# --------------------------------------------
+# ⚙️ Global Excludes & Project Roots
+# --------------------------------------------
 export FD_EXCLUDES=(
-    --exclude ~/Library
+    --exclude Library
+    --exclude .git
+    --exclude node_modules
+    --exclude .DS_Store
+    --exclude dist
+    --exclude build
 )
 
-##############################################
-# 📁 프로젝트 디렉토리 목록
-##############################################
 export PROJECT_DIRS=(
     ~/Develop
     ~/AI
 )
 
-##############################################
-# 🔍 FZF TOOLKIT (기능 중심)
-##############################################
+export FZF_PREVIEW="bat --color=always --style=numbers --line-range=:200 {} 2>/dev/null || cat {}"
 
-# 공통 프리뷰 옵션 (bat 없으면 cat)
-export FZF_PREVIEW="bat --color=always --style=numbers --line-range=:200 {} || cat {}"
 
-##############################################
-# 1) 파일 선택 → VSCode로 열기
-##############################################
+# --------------------------------------------
+# 📂 파일 선택 → VSCode 열기
+# --------------------------------------------
 # @desc: 파일 선택 후 VSCode로 열기
 # @usage: fzf_code
 fzf_code() {
@@ -32,9 +34,9 @@ fzf_code() {
     code "$file"
 }
 
-##############################################
-# 2) 파일 선택 → Finder로 열기
-##############################################
+# --------------------------------------------
+# 📂 파일 선택 → Finder 열기
+# --------------------------------------------
 # @desc: 파일 선택 후 Finder로 열기
 # @usage: fzf_open
 fzf_open() {
@@ -44,83 +46,81 @@ fzf_open() {
     open "$file"
 }
 
-##############################################
-# 3) 디렉토리 선택 → 이동
-##############################################
-# @desc: 디렉토리 선택 후 이동 (기본: 홈 디렉토리)
-# @usage: fzfcd [시작경로]
-# @example: fzfcd ~/Projects
+
+# --------------------------------------------
+# 📁 디렉토리 이동 (인자 사용)
+# --------------------------------------------
+# @desc: 시작 경로에서 디렉토리 선택 후 이동
+# @usage: fzfcd [path]
+# @example: fzfcd ~/Develop
 fzfcd() {
     local start_path="${1:-~}"
     local dir
     dir=$(fd . --type d "${FD_EXCLUDES[@]}" "$start_path" \
         | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null") || return
-    cd "$dir"
+    cd "$dir" || return
 }
 
-##############################################
-# 4) 프로젝트 디렉토리 빠른 이동
-##############################################
-# @desc: 주로 사용하는 디렉토리 범위 내에서 프로젝트 선택 후 이동
+# --------------------------------------------
+# 📁 프로젝트 빠른 이동
+# --------------------------------------------
+# @desc: PROJECT_DIRS 안에서 프로젝트 선택 후 이동
 # @usage: fzf_project
 fzf_project() {
     local dir
-    dir=$(fd . --type d --max-depth 2 \
-        --exclude node_modules \
-        --exclude .git \
-        --exclude dist \
-        --exclude build \
-        "${PROJECT_DIRS[@]}" 2>/dev/null \
-        | fzf --preview "eza --tree --level=2 --color=always --ignore-glob='node_modules|.git' {} 2>/dev/null") || return
-    cd "$dir"
+    dir=$(fd . --type d --max-depth 2 "${FD_EXCLUDES[@]}" "${PROJECT_DIRS[@]}" \
+        | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null") || return
+    cd "$dir" || return
 }
 
-##############################################
-# 5) 최근 방문한 디렉토리 선택 → 이동 (zsh-z 기반)
-##############################################
-# @desc: 최근 방문한 디렉토리 선택 후 이동
+
+# --------------------------------------------
+# 🧭 최근 방문 디렉토리 이동
+# --------------------------------------------
+# @desc: 최근 방문 디렉토리 선택 후 이동 (zoxide)
 # @usage: fzf_recent_dir
 fzf_recent_dir() {
     local dir
-    dir=$(z | awk '{print $2}' \
+    dir=$(zoxide query -l \
         | fzf --preview "eza --tree --level=2 --color=always {} 2>/dev/null") || return
-    cd "$dir"
+    cd "$dir" || return
 }
 
-##############################################
-# 6) 대용량 폴더 빠른 확인 (Library 전용)
-##############################################
-# @desc: 대용량 폴더 확인 (~/Library)
+
+# --------------------------------------------
+# 🧹 대용량 폴더 확인
+# --------------------------------------------
+# @desc: Library에서 대용량 폴더 확인
 # @usage: findbig
 findbig() {
     du -ah ~/Library/Application\ Support ~/Library/Caches 2>/dev/null \
         | sort -hr \
-        | head -n 30
+        | head -n 20
 }
 
-##############################################
-# 7) 앱 잔여 파일 검색 (Library 전용)
-##############################################
-# @desc: 앱 잔여 파일 검색 (~/Library)
+
+# --------------------------------------------
+# 🗑️ 앱 잔여 파일 검색 (Library 전용)
+# --------------------------------------------
+# @desc: 앱 이름으로 잔여 파일 검색 (~/Library)
 # @usage: findapp <app-name>
 # @example: findapp Chrome
 findapp() {
-    if [[ -z "$1" ]]; then
-        echo "❗ 사용법: findapp <app-name>"
-        return 1
-    fi
-    
+    [[ -z "$1" ]] && echo "❗ Usage: findapp <app-name>" && return 1
     local keyword="$1"
-    
-    echo "📁 Containers:"
-    fd -i "$keyword" ~/Library/Containers
 
-    echo "\n📁 Application Support:"
-    fd -i "$keyword" ~/Library/Application\ Support --exclude "Google/Chrome"
-
-    echo "\n📁 Preferences:"
-    fd -i "$keyword" ~/Library/Preferences
+    echo "📁 Application Support:"
+    fd -i "$keyword" ~/Library/Application\ Support 2>/dev/null || echo "  (없음)"
 
     echo "\n📁 Caches:"
-    fd -i "$keyword" ~/Library/Caches
+    fd -i "$keyword" ~/Library/Caches 2>/dev/null || echo "  (없음)"
+
+    echo "\n📁 Preferences:"
+    fd -i "$keyword" ~/Library/Preferences 2>/dev/null || echo "  (없음)"
+
+    echo "\n📁 Containers:"
+    fd -i "$keyword" ~/Library/Containers 2>/dev/null || echo "  (없음)"
+
+    echo "\n📁 Saved Application State:"
+    fd -i "$keyword" ~/Library/Saved\ Application\ State 2>/dev/null || echo "  (없음)"
 }
