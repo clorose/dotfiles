@@ -1,7 +1,6 @@
 ############################################################
 # 🐙 Git 기본 명령어
 ############################################################
-
 alias gs="git status"
 alias gss="git status -s"
 alias ga="git add"
@@ -10,14 +9,13 @@ alias gc="git commit"
 alias gca="git commit --amend"
 alias goops="git commit --amend --no-edit"
 alias gpl="git pull"
-alias gps="git push" 
+alias gps="git push"
 
 ############################################################
-# 🌿 브랜치 관련
+# 🌿 브랜치 관련 (Modern Git: switch/restore 기반)
 ############################################################
-alias gba="git branch -a"
-alias gco="git checkout"
-alias gcb="git checkout -b"
+alias gsw="git switch"
+alias gswc="git switch -c"
 
 ############################################################
 # 🔍 변경사항 확인
@@ -34,6 +32,7 @@ alias glg="git log --graph --oneline"
 ############################################################
 # ♻ 되돌리기 / 리셋
 ############################################################
+# 스테이징된 변경만 취소 (파일 내용은 건드리지 않음 – 안전)
 alias grs="git restore --staged"
 
 ############################################################
@@ -44,40 +43,39 @@ alias gstp="git stash pop"
 alias gstl="git stash list"
 
 ############################################################
-# 🔄 main/develop 동기화
+# 🔄 main/master/develop 자동 동기화
 ############################################################
-# @desc: main과 develop 브랜치를 순서대로 최신화
+# @desc: main/master/develop 존재 여부에 따라 자동 pull 후 원래 브랜치 복귀
 # @usage: gsync
 gsync() {
     local current_branch
     current_branch=$(git branch --show-current)
 
-    # 1. 안전장치: 수정 중인 파일이 있으면 중단 (Stash/Commit 유도)
+    # 1. 안전장치: 수정 중이면 중단
     if ! git diff --quiet || ! git diff --cached --quiet; then
         echo "⛔️ 수정사항(Uncommitted changes)이 있어 중단합니다."
         return 1
     fi
 
-    # 2. Main 브랜치 업데이트
+    # 2. main 업데이트
     if git show-ref --verify --quiet refs/heads/main; then
         echo "🔄 Syncing main..."
         git switch main && git pull || return 1
     fi
 
-    # 3. Master 브랜치 업데이트 (Main과 별개로 체크하여 둘 다 있으면 둘 다 함)
+    # 3. master 업데이트
     if git show-ref --verify --quiet refs/heads/master; then
         echo "🔄 Syncing master..."
         git switch master && git pull || return 1
     fi
 
-    # 4. Develop 브랜치 업데이트
+    # 4. develop 업데이트
     if git show-ref --verify --quiet refs/heads/develop; then
         echo "🔄 Syncing develop..."
         git switch develop && git pull || return 1
     fi
 
-    # 5. 원래 브랜치로 복귀 (핵심 수정 사항)
-    # 현재 위치가 시작했던 브랜치와 다르다면, 무조건 원래 브랜치로 이동
+    # 5. 원래 브랜치 복귀
     if [[ "$(git branch --show-current)" != "$current_branch" ]]; then
         echo "🔙 Returning to $current_branch..."
         git switch "$current_branch"
@@ -89,7 +87,7 @@ gsync() {
 ############################################################
 # 🧹 merged 브랜치 정리
 ############################################################
-# @desc: 이미 머지된 로컬 브랜치 일괄 삭제 (확인 후 실행)
+# @desc: main/develop/master에 이미 머지된 브랜치를 일괄 삭제
 # @usage: gbclean
 gbclean() {
     local branches=$(git branch --merged | grep -v "\*\|main\|develop\|master")
