@@ -11,6 +11,7 @@ alias lt="eza -l --sort=modified --reverse --icons --group-directories-first"
 alias tree="eza -T --icons --group-directories-first --level=2"
 alias trea="eza -Ta --icons --group-directories-first --level=2"
 alias treel="eza -T --icons --group-directories-first" # 제한 없는 버전 (Long)
+alias treela="eza -Ta --icons --group-directories-first" # 제한 없는 버전
 
 alias ..="cd .."
 alias ...="cd ../.."

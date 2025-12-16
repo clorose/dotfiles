@@ -24,6 +24,29 @@ alias gswc="git switch -c"
 alias gd="git diff"
 alias gdh="git diff HEAD"
 alias gds="git diff --staged"
+alias gnew="git ls-files --others --exclude-standard"
+
+############################################################
+# 🔍 변경사항 확인
+############################################################
+alias gd="git diff"
+alias gdh="git diff HEAD"
+alias gds="git diff --staged"
+alias gnew="git ls-files --others --exclude-standard"
+
+# @desc: git diff HEAD 결과를 diff.txt로 저장
+# @usage: gdiff
+gdiff() {
+    git diff HEAD > diff.txt
+    echo "✅ diff.txt"
+}
+
+# @desc: 새 파일(untracked) 내용을 new.txt로 저장
+# @usage: gnewf
+gnewf() {
+    git ls-files --others --exclude-standard | xargs bat > new.txt
+    echo "✅ new.txt"
+}
 
 ############################################################
 # 📜 로그 보기
