@@ -84,3 +84,6 @@ done
 # ✨ zsh-syntax-highlighting (마지막에!)
 ##############################################
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+# Added by Antigravity
+export PATH="/Users/gohan/.antigravity/antigravity/bin:$PATH"
