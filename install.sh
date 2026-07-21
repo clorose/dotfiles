@@ -140,7 +140,7 @@ install_ohmyzsh() {
 # Step 3: Stow로 dotfiles 연결
 ##############################################
 setup_stow() {
-    print_step "3" "Stow로 설정 파일 연결 (zsh, git, mise)"
+    print_step "3" "Stow로 설정 파일 연결 (zsh, git, mise, conda)"
     
     local BACKUP_DIR="$HOME/dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
     local NEED_BACKUP=false
@@ -148,10 +148,12 @@ setup_stow() {
     # 충돌 파일 체크
     local CONFLICT_FILES=(
         "$HOME/.zshrc"
+        "$HOME/.zprofile"
         "$HOME/.p10k.zsh"
         "$HOME/.gitconfig"
         "$HOME/.config/git/commit-template.txt"
         "$HOME/.config/mise/config.toml"
+        "$HOME/.condarc"
     )
     
     echo "충돌 파일 확인 중..."
@@ -184,14 +186,16 @@ setup_stow() {
     fi
     
     echo ""
-    if ask_yes_no "설정 파일들을 연결하시겠습니까? (zsh, git, mise)"; then
+    if ask_yes_no "설정 파일들을 연결하시겠습니까? (zsh, git, mise, conda)"; then
         echo ""
-        stow -v zsh git mise
+        stow -v zsh git mise conda
         print_success "Stow 설정 완료!"
         echo ""
         print_info "연결된 파일들:"
         echo "  • ~/.zshrc"
+        echo "  • ~/.zprofile"
         echo "  • ~/.p10k.zsh"
+        echo "  • ~/.condarc"
         echo "  • ~/.gitconfig"
         echo "  • ~/.config/git/commit-template.txt"
         echo "  • ~/.config/mise/config.toml"

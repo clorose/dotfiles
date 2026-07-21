@@ -91,7 +91,3 @@ source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-
-
-# Added by Antigravity CLI installer
-export PATH="/Users/gohan/.local/bin:$PATH"
