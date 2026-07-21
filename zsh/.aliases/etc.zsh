@@ -49,6 +49,13 @@ txz() {
 unzd() { unzip "$1" -d "${1%.*}"; }
 
 ############################################################
+# 🔬 .NET 디컴파일 (STS2 모딩)
+############################################################
+# @desc: dotnet-ildasm이 netcoreapp2.2 대상 화석 툴이라 최신 런타임으로 roll-forward 필요
+# @usage: dotnet-ildasm <assembly.dll>
+alias dotnet-ildasm='DOTNET_ROLL_FORWARD=LatestMajor ~/.dotnet/tools/dotnet-ildasm'
+
+############################################################
 # 🎸 Guitar (기타)
 ############################################################
 # 하드웨어(손가락) 결함으로 발생하는 Human Error 방지용 Error Boundary
