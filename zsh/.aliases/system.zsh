@@ -28,20 +28,14 @@ alias reload="source ~/.zshrc" # 설정 재로드
 alias md="mkdir -p"            # 디렉토리 생성
 alias rd="rmdir"               # 빈 디렉토리 삭제
 alias c="code ."               # VS Code로 열기
-alias o="open ."               # Finder로 열기
 
 # ============================
 # 🌐 네트워크 / 시스템 정보
 # ============================
 alias ip="curl ifconfig.me"            # 외부 IP
-alias localip="ipconfig getifaddr en0 || ipconfig getifaddr en1" # 로컬 IP
 alias ports="lsof -PiTCP -sTCP:LISTEN" # 포트 확인
 
-alias flush="sudo dscacheutil -flushcache && sudo killall -HUP mDNSResponder"
 alias cleanup="find . -type f -name '*.DS_Store' -delete"
-
-alias show="defaults write com.apple.finder AppleShowAllFiles YES && killall Finder"
-alias hide="defaults write com.apple.finder AppleShowAllFiles NO && killall Finder"
 
 # ============================
 # 🔍 검색 관련
@@ -92,33 +86,3 @@ dus() {
     # 에러(권한 등) 숨기고 용량 순으로 정렬해서 출력
     du -sh * 2>/dev/null | sort -hr
 }
-
-# ============================
-# 💽 Volumes / DMG (Eject)
-# ============================
-# @desc: Finder의 "추출"(Eject)과 동일 - 마운트된 볼륨(/Volumes/...)을 안전하게 꺼냄
-# @usage: ejectvol <VolumeName>
-# @example: ejectvol "Cursor Installer"
-ejectvol() {
-    local name="$1"
-    [[ -z "$name" ]] && { echo "usage: ejectvol <VolumeName>"; return 1; }
-
-    local vol="/Volumes/$name"
-    if [[ ! -d "$vol" ]]; then
-        echo "not mounted: $vol"
-        echo "mounted volumes:"
-        ls /Volumes
-        return 1
-    fi
-
-    diskutil eject "$vol"
-}
-
-# @desc: ejectvol 인자(볼륨명) 탭 자동완성
-# @usage: ejectvol <TAB>
-_ejectvol() {
-    local -a vols
-    vols=(${(f)"$(ls -1 /Volumes 2>/dev/null)"})
-    _describe 'volumes' vols
-}
-compdef _ejectvol ejectvol

@@ -1,0 +1,21 @@
+# macOS 전용 패키지 (Linux brew는 cask 미지원)
+# install.sh가 macOS에서만 이 파일을 추가로 적용함
+
+# Mac App Store command-line interface
+brew "mas"
+# Android SDK component
+cask "android-platform-tools"
+# OpenAI's coding agent that runs in your terminal
+cask "codex"
+cask "font-hack-nerd-font"
+cask "font-pretendard"
+# Terminal emulator that uses platform-native UI and GPU acceleration
+cask "ghostty"
+# Reverse proxy, secure introspectable tunnels to localhost
+cask "ngrok"
+# Mesh VPN based on WireGuard
+cask "tailscale-app"
+# OpenJDK distribution from Azul
+cask "zulu@17"
+# OpenJDK distribution from Azul
+cask "zulu@21"

@@ -3,6 +3,17 @@
 set -e
 
 ##############################################
+# OS 판별 (macOS / Linux·WSL)
+##############################################
+IS_MAC=false
+IS_LINUX=false
+case "$(uname -s)" in
+    Darwin) IS_MAC=true ;;
+    Linux)  IS_LINUX=true ;;
+    *) echo "지원하지 않는 OS: $(uname -s)"; exit 1 ;;
+esac
+
+##############################################
 # 색상 정의
 ##############################################
 RED='\033[0;31m'
@@ -64,13 +75,12 @@ install_homebrew() {
         if ask_yes_no "Homebrew를 설치하시겠습니까?"; then
             echo ""
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-            
-            # Apple Silicon Mac의 경우 PATH 추가
-            if [[ $(uname -m) == 'arm64' ]]; then
-                echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
-                eval "$(/opt/homebrew/bin/brew shellenv)"
-            fi
-            
+
+            # PATH 등록 (영구 등록은 stow되는 .zprofile이 담당)
+            for _brew in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+                [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
+            done
+
             print_success "Homebrew 설치 완료!"
         else
             print_error "Homebrew 설치를 건너뜁니다. 이후 단계를 진행할 수 없습니다."
@@ -82,6 +92,11 @@ install_homebrew() {
     if ask_yes_no "Brewfile의 패키지들을 설치하시겠습니까?"; then
         echo ""
         brew bundle --file=./Brewfile
+        if $IS_MAC; then
+            brew bundle --file=./Brewfile.darwin
+        else
+            print_info "Linux: macOS 전용 패키지(Brewfile.darwin)는 건너뜁니다."
+        fi
         print_success "Brewfile 설치 완료!"
     else
         print_warning "Brewfile 설치를 건너뜁니다."
@@ -140,7 +155,11 @@ install_ohmyzsh() {
 # Step 3: Stow로 dotfiles 연결
 ##############################################
 setup_stow() {
-    print_step "3" "Stow로 설정 파일 연결 (zsh, git, mise, ghostty, bat)"
+    # ghostty는 macOS에서만 (Linux는 터미널이 Windows측이라 불필요)
+    local STOW_PKGS=(zsh git mise bat)
+    $IS_MAC && STOW_PKGS+=(ghostty)
+
+    print_step "3" "Stow로 설정 파일 연결 (${STOW_PKGS[*]})"
     
     local BACKUP_DIR="$HOME/dotfiles_backup_$(date +%Y%m%d_%H%M%S)"
     local NEED_BACKUP=false
@@ -186,16 +205,16 @@ setup_stow() {
     fi
     
     echo ""
-    if ask_yes_no "설정 파일들을 연결하시겠습니까? (zsh, git, mise, ghostty, bat)"; then
+    if ask_yes_no "설정 파일들을 연결하시겠습니까? (${STOW_PKGS[*]})"; then
         echo ""
-        stow -v zsh git mise ghostty bat
+        stow -v "${STOW_PKGS[@]}"
         print_success "Stow 설정 완료!"
         echo ""
         print_info "연결된 파일들:"
         echo "  • ~/.zshrc"
         echo "  • ~/.zprofile"
         echo "  • ~/.p10k.zsh"
-        echo "  • ~/.config/ghostty/config"
+        $IS_MAC && echo "  • ~/.config/ghostty/config"
         echo "  • ~/.gitconfig"
         echo "  • ~/.config/git/commit-template.txt"
         echo "  • ~/.config/mise/config.toml"
@@ -293,12 +312,12 @@ setup_ssh_key() {
     
     if [[ -f "$SSH_KEY" ]]; then
         print_success "SSH Key가 이미 존재합니다: $SSH_KEY"
-        
+
         echo ""
-        if ask_yes_no "SSH Key를 Apple Keychain에 추가하시겠습니까?"; then
+        if $IS_MAC && ask_yes_no "SSH Key를 Apple Keychain에 추가하시겠습니까?"; then
             ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add -K "$SSH_KEY"
             print_success "SSH Key가 Keychain에 추가되었습니다."
-            
+
             echo ""
             print_info "SSH 연결 테스트:"
             echo "  ${CYAN}ssh -T git@github.com${NC}"
@@ -311,7 +330,11 @@ setup_ssh_key() {
             
             mkdir -p "$HOME/.ssh"
             ssh-keygen -t ed25519 -C "$github_email" -f "$SSH_KEY"
-            ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add -K "$SSH_KEY"
+            if $IS_MAC; then
+                ssh-add --apple-use-keychain "$SSH_KEY" 2>/dev/null || ssh-add -K "$SSH_KEY"
+            else
+                ssh-add "$SSH_KEY" 2>/dev/null || print_warning "ssh-agent가 없어 키 등록을 건너뜁니다."
+            fi
             
             echo ""
             print_success "SSH Key 생성 완료!"
@@ -339,7 +362,13 @@ change_shell() {
         print_warning "기본 Shell이 zsh가 아닙니다: $SHELL"
         echo ""
         if ask_yes_no "기본 Shell을 zsh로 변경하시겠습니까?"; then
-            chsh -s "$(which zsh)"
+            # Linux: brew로 설치한 zsh는 /etc/shells에 없어서 chsh가 거부됨 → 먼저 등록
+            local ZSH_PATH="$(which zsh)"
+            if $IS_LINUX && ! grep -qx "$ZSH_PATH" /etc/shells; then
+                print_info "/etc/shells에 zsh 등록 (sudo 필요)"
+                echo "$ZSH_PATH" | sudo tee -a /etc/shells > /dev/null
+            fi
+            chsh -s "$ZSH_PATH"
             print_success "기본 Shell을 zsh로 변경했습니다."
             echo ""
             print_warning "변경사항은 로그아웃 후 다시 로그인하면 적용됩니다."
@@ -351,8 +380,11 @@ change_shell() {
 # Step 9: Alfred Workflows 안내
 ##############################################
 setup_alfred() {
+    if $IS_LINUX; then
+        return 0  # Alfred는 macOS 전용
+    fi
     print_step "9" "Alfred Workflows 설치 안내"
-    
+
     local ALFRED_DIR="./alfred"
     
     if [[ -d "$ALFRED_DIR" ]] && [[ -n "$(ls -A $ALFRED_DIR/*.alfredworkflow 2>/dev/null)" ]]; then

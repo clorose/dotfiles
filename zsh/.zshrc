@@ -1,11 +1,18 @@
 ##############################################
-# 🔐 SSH Key (GitHub - Apple Keychain)
+# 🔐 SSH Key (GitHub)
+# macOS는 Apple Keychain 연동, Linux는 일반 ssh-add
 ##############################################
-if ssh-add --apple-use-keychain ~/.ssh/id_ed25519_github > /dev/null 2>&1; then
+if [[ "$OSTYPE" == darwin* ]]; then
+    _ssh_add_opts=(--apple-use-keychain)
+else
+    _ssh_add_opts=()
+fi
+if ssh-add "${_ssh_add_opts[@]}" ~/.ssh/id_ed25519_github > /dev/null 2>&1; then
     echo "Welcome, ${USER}"
 else
     echo "SSH key loading failed"
 fi
+unset _ssh_add_opts
 
 ##############################################
 # ⚡ Powerlevel10k Instant Prompt
@@ -38,9 +45,16 @@ export VISUAL="code -w"
 
 ##############################################
 # 🍺 Homebrew
+# 경로 등록은 .zprofile의 shellenv가 담당 (macOS/Linux 자동 감지)
+# 비로그인 셸 대비 안전장치만 여기 둠
 ##############################################
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
-export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+if [[ -z "$HOMEBREW_PREFIX" ]]; then
+    for _brew in /opt/homebrew/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+        [[ -x "$_brew" ]] && eval "$("$_brew" shellenv)" && break
+    done
+    unset _brew
+fi
+[[ -d "$HOMEBREW_PREFIX/opt/postgresql@17/bin" ]] && export PATH="$HOMEBREW_PREFIX/opt/postgresql@17/bin:$PATH"
 
 ##############################################
 # 🟦 mise
@@ -70,8 +84,13 @@ ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=60"
 
 ##############################################
 # 🔧 Custom Aliases (분리된 alias 파일들)
+# darwin.zsh / linux.zsh는 해당 OS에서만 로드
 ##############################################
 for alias_file in ~/.aliases/*.zsh; do
+    case "${alias_file:t}" in
+        darwin.zsh) [[ "$OSTYPE" == darwin* ]] || continue ;;
+        linux.zsh)  [[ "$OSTYPE" == linux*  ]] || continue ;;
+    esac
     source "$alias_file"
 done
 
@@ -83,7 +102,7 @@ done
 ##############################################
 # ✨ zsh-syntax-highlighting (마지막에!)
 ##############################################
-source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"

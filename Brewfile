@@ -32,8 +32,6 @@ brew "go"
 brew "gradle"
 # Anti-bikeshedding Kotlin linter with built-in formatter
 brew "ktlint"
-# Mac App Store command-line interface
-brew "mas"
 # Java-based project management
 brew "maven"
 # Polyglot runtime manager (asdf rust clone)
@@ -74,19 +72,3 @@ brew "zoxide"
 brew "zsh"
 # Fish shell like syntax highlighting for zsh
 brew "zsh-syntax-highlighting"
-# Android SDK component
-cask "android-platform-tools"
-# OpenAI's coding agent that runs in your terminal
-cask "codex"
-cask "font-hack-nerd-font"
-cask "font-pretendard"
-# Terminal emulator that uses platform-native UI and GPU acceleration
-cask "ghostty"
-# Reverse proxy, secure introspectable tunnels to localhost
-cask "ngrok"
-# Mesh VPN based on WireGuard
-cask "tailscale-app"
-# OpenJDK distribution from Azul
-cask "zulu@17"
-# OpenJDK distribution from Azul
-cask "zulu@21"
