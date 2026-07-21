@@ -6,6 +6,7 @@
 *.zsh linguist-vendored
 *.sh linguist-vendored
 .zshrc linguist-vendored
+.zprofile linguist-vendored
 
 # Brewfile - 패키지 관리 (Ruby 통계 제외)
-Brewfile linguist-vendored
+Brewfile* linguist-vendored
