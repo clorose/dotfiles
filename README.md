@@ -25,6 +25,10 @@
 ├── alfred
 │   ├── Obsidian Vault Changer.alfredworkflow
 │   └── VSCode Project Manager.alfredworkflow
+├── bat
+│   └── .config
+│       └── bat
+│           └── config
 ├── Fonts
 │   └── Jetendard-*.ttf (16종)
 ├── ghostty
@@ -74,6 +78,10 @@
 * **`git/`**
   * 글로벌 Git 설정: `~/.gitconfig`
   * 커밋 템플릿: `~/.config/git/commit-template.txt`
+  * 글로벌 gitignore: `~/.config/git/ignore`
+
+* **`bat/`**
+  * bat 설정: `~/.config/bat/config`
 
 * **`mise/`**
   * `~/.config/mise/config.toml`
@@ -149,7 +157,7 @@ exec zsh
    * 플러그인: `git`, `zsh-autosuggestions`, `colored-man-pages`, `extract`, `zsh-syntax-highlighting`
 
 4. **stow로 dotfiles 심볼릭 링크 생성**
-   * `stow zsh git mise ghostty` 실행
+   * `stow zsh git mise ghostty bat` 실행
    * 결과:
      * `zsh/.zshrc` → `~/.zshrc`
      * `zsh/.zprofile` → `~/.zprofile`
@@ -157,8 +165,10 @@ exec zsh
      * `zsh/.aliases/*.zsh` → `~/.aliases/*.zsh`
      * `git/.gitconfig` → `~/.gitconfig`
      * `git/.config/git/commit-template.txt` → `~/.config/git/commit-template.txt`
+     * `git/.config/git/ignore` → `~/.config/git/ignore`
      * `mise/.config/mise/config.toml` → `~/.config/mise/config.toml`
      * `ghostty/.config/ghostty/config` → `~/.config/ghostty/config`
+     * `bat/.config/bat/config` → `~/.config/bat/config`
 
 5. **mise 설정 및 글로벌 런타임 설치**
    * `mise trust` 자동 실행
@@ -239,7 +249,7 @@ exec zsh
 
 * 설치할 때 백업된 파일들은 `~/.dotfiles_backup_YYYYMMDD_HHMMSS/` 아래에 있습니다.
 * 완전히 되돌리려면:
-  1. `stow -D zsh git mise ghostty`로 심볼릭 링크 해제
+  1. `stow -D zsh git mise ghostty bat`로 심볼릭 링크 해제
   2. 백업 디렉토리에서 원래 위치로 파일을 복구
 
 ---
