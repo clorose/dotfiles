@@ -92,3 +92,33 @@ dus() {
     # 에러(권한 등) 숨기고 용량 순으로 정렬해서 출력
     du -sh * 2>/dev/null | sort -hr
 }
+
+# ============================
+# 💽 Volumes / DMG (Eject)
+# ============================
+# @desc: Finder의 "추출"(Eject)과 동일 - 마운트된 볼륨(/Volumes/...)을 안전하게 꺼냄
+# @usage: ejectvol <VolumeName>
+# @example: ejectvol "Cursor Installer"
+ejectvol() {
+    local name="$1"
+    [[ -z "$name" ]] && { echo "usage: ejectvol <VolumeName>"; return 1; }
+
+    local vol="/Volumes/$name"
+    if [[ ! -d "$vol" ]]; then
+        echo "not mounted: $vol"
+        echo "mounted volumes:"
+        ls /Volumes
+        return 1
+    fi
+
+    diskutil eject "$vol"
+}
+
+# @desc: ejectvol 인자(볼륨명) 탭 자동완성
+# @usage: ejectvol <TAB>
+_ejectvol() {
+    local -a vols
+    vols=(${(f)"$(ls -1 /Volumes 2>/dev/null)"})
+    _describe 'volumes' vols
+}
+compdef _ejectvol ejectvol

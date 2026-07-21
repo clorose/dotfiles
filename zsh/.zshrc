@@ -85,5 +85,13 @@ done
 ##############################################
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-# Added by Antigravity
-export PATH="/Users/gohan/.antigravity/antigravity/bin:$PATH"
+# bun completions
+[ -s "/Users/gohan/.bun/_bun" ] && source "/Users/gohan/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/gohan/.local/bin:$PATH"
