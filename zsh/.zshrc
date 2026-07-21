@@ -86,7 +86,7 @@ done
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # bun completions
-[ -s "/Users/gohan/.bun/_bun" ] && source "/Users/gohan/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
