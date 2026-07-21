@@ -10,7 +10,7 @@
 - Runtime: **mise** (node / pnpm / python / rust)
 - Tools: **fzf, ripgrep, zoxide, vivid, git-delta** 등
 - Alias: 역할별 모듈 분리 (`git.zsh`, `docker.zsh`, `system.zsh` 등)
-- 설치: **레포 루트의 `install` 한 번 실행**으로 대부분 자동 적용
+- 설치: **레포 루트의 `install.sh` 한 번 실행**으로 대부분 자동 적용
 
 > ⚠️ 이 레포는 "내 환경 그대로"를 통째로 적용하는 **opinionated 세트**입니다.  
 > - 기본 사용법: README대로 따라 해서 **그냥 이 셋업을 그대로 쓰는 것**  
@@ -26,15 +26,20 @@
 │   ├── Obsidian Vault Changer.alfredworkflow
 │   └── VSCode Project Manager.alfredworkflow
 ├── Fonts
-│   ├── HackNerdFontMono-Bold.ttf
-│   ├── HackNerdFontMono-BoldItalic.ttf
-│   ├── HackNerdFontMono-Italic.ttf
-│   └── HackNerdFontMono-Regular.ttf
+│   └── Jetendard-*.ttf (16종)
+├── ghostty
+│   └── .config
+│       └── ghostty
+│           └── config
 ├── git
 │   ├── .config
 │   │   └── git
 │   │       └── commit-template.txt
 │   └── .gitconfig
+├── karabiner
+│   └── .config
+│       └── karabiner
+│           └── karabiner.json
 ├── mise
 │   └── .config
 │       └── mise
@@ -51,18 +56,19 @@
 │   │   ├── search.zsh
 │   │   └── system.zsh
 │   ├── .p10k.zsh
+│   ├── .zprofile
 │   └── .zshrc
 ├── .gitattributes
 ├── .gitignore
 ├── Brewfile
-├── install
+├── install.sh
 └── README.md
 ```
 
 ### 주요 디렉토리 역할
 
 * **`zsh/`**
-  * `~/.zshrc`, `~/.p10k.zsh`, `~/.aliases/*.zsh` 관리
+  * `~/.zshrc`, `~/.zprofile`, `~/.p10k.zsh`, `~/.aliases/*.zsh` 관리
   * alias를 역할별 파일로 분리 (`git.zsh`, `docker.zsh`, `system.zsh`, `search.zsh` 등)
 
 * **`git/`**
@@ -78,10 +84,17 @@
   * 자동 설치까지는 안 하고, **필요하면 Alfred에서 수동 Import**해서 사용
 
 * **`Fonts/`**
-  * Hack Nerd Font 등 폰트 파일
-  * 직접 `~/Library/Fonts`로 복사해서 사용 (원하면 나중에 stow로 묶어도 됨)
+  * Jetendard 폰트 (ghostty 터미널 폰트, OFL 라이선스)
+  * 직접 `~/Library/Fonts`로 복사해서 사용 (Hack Nerd Font는 Brewfile의 cask로 설치됨)
 
-* **`install`**
+* **`ghostty/`**
+  * Ghostty 터미널 설정: `~/.config/ghostty/config`
+
+* **`karabiner/`**
+  * Karabiner-Elements 키 리맵 설정 스냅샷
+  * stow 대상이 아님 - Karabiner 앱이 설정 폴더를 직접 관리하므로 변경 시 수동으로 복사해서 동기화
+
+* **`install.sh`**
   * macOS에서 한 번 실행해서 위 설정들을 순서대로 적용하는 스크립트
 
 ---
@@ -106,8 +119,8 @@ git clone git@github.com:clorose/dotfiles.git ~/dotfiles
 
 # 2. 설치 스크립트 실행
 cd ~/dotfiles
-chmod +x install
-./install
+chmod +x install.sh
+./install.sh
 
 # 3. 터미널 완전히 닫았다가 다시 열기
 exec zsh
@@ -119,10 +132,10 @@ exec zsh
 
 ## 🛠 설치 시 스크립트가 하는 일
 
-`./install` 실행 시, 다음 순서로 진행합니다:
+`./install.sh` 실행 시, 다음 순서로 진행합니다:
 
 1. **충돌 파일 자동 백업**
-   * `~/.zshrc`, `~/.p10k.zsh`, `~/.gitconfig`, `~/.config/git/commit-template.txt`, `~/.config/mise/config.toml` 등 기존 파일이 있으면
+   * `~/.zshrc`, `~/.zprofile`, `~/.p10k.zsh`, `~/.gitconfig`, `~/.config/git/commit-template.txt`, `~/.config/mise/config.toml`, `~/.config/ghostty/config` 등 기존 파일이 있으면
    * `~/.dotfiles_backup_YYYYMMDD_HHMMSS/` 아래로 자동 백업
 
 2. **Homebrew 설치 + Brewfile 적용**
@@ -136,14 +149,16 @@ exec zsh
    * 플러그인: `git`, `zsh-autosuggestions`, `colored-man-pages`, `extract`, `zsh-syntax-highlighting`
 
 4. **stow로 dotfiles 심볼릭 링크 생성**
-   * `stow zsh git mise` 실행
+   * `stow zsh git mise ghostty` 실행
    * 결과:
      * `zsh/.zshrc` → `~/.zshrc`
+     * `zsh/.zprofile` → `~/.zprofile`
      * `zsh/.p10k.zsh` → `~/.p10k.zsh`
      * `zsh/.aliases/*.zsh` → `~/.aliases/*.zsh`
      * `git/.gitconfig` → `~/.gitconfig`
      * `git/.config/git/commit-template.txt` → `~/.config/git/commit-template.txt`
      * `mise/.config/mise/config.toml` → `~/.config/mise/config.toml`
+     * `ghostty/.config/ghostty/config` → `~/.config/ghostty/config`
 
 5. **mise 설정 및 글로벌 런타임 설치**
    * `mise trust` 자동 실행
@@ -224,7 +239,7 @@ exec zsh
 
 * 설치할 때 백업된 파일들은 `~/.dotfiles_backup_YYYYMMDD_HHMMSS/` 아래에 있습니다.
 * 완전히 되돌리려면:
-  1. `stow -D zsh git mise`로 심볼릭 링크 해제
+  1. `stow -D zsh git mise ghostty`로 심볼릭 링크 해제
   2. 백업 디렉토리에서 원래 위치로 파일을 복구
 
 ---
