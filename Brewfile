@@ -82,8 +82,6 @@ cask "font-hack-nerd-font"
 cask "font-pretendard"
 # Terminal emulator that uses platform-native UI and GPU acceleration
 cask "ghostty"
-# Minimal installer for conda specific to conda-forge
-cask "miniforge"
 # Reverse proxy, secure introspectable tunnels to localhost
 cask "ngrok"
 # Mesh VPN based on WireGuard
