@@ -29,19 +29,30 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 plugins=(
     git
-    zsh-autosuggestions
     extract
     colored-man-pages
 )
 
-source "$ZSH/oh-my-zsh.sh"
+[[ -r "$ZSH/oh-my-zsh.sh" ]] && source "$ZSH/oh-my-zsh.sh"
+
+# Homebrew 직접 설치와 Linux 배포판 패키지 경로 모두 지원
+if [[ -r "$ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+    source "$ZSH_CUSTOM/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh"
+elif [[ -r /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fi
 
 ##############################################
 # 🌍 Locale & Editor
 ##############################################
 export LANG="en_US.UTF-8"
-export EDITOR="code -w"
-export VISUAL="code -w"
+if command -v code >/dev/null 2>&1; then
+    export EDITOR="code --wait"
+    export VISUAL="code --wait"
+else
+    export EDITOR="nano"
+    export VISUAL="nano"
+fi
 
 ##############################################
 # 🍺 Homebrew
@@ -59,23 +70,30 @@ fi
 ##############################################
 # 🟦 mise
 ##############################################
-eval "$(mise activate zsh)"
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
 ##############################################
 # 🔎 fzf
 ##############################################
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+if [[ -r "$HOME/.fzf.zsh" ]]; then
+    source "$HOME/.fzf.zsh"
+else
+    [[ -r /usr/share/doc/fzf/examples/completion.zsh ]] \
+        && source /usr/share/doc/fzf/examples/completion.zsh
+    [[ -r /usr/share/doc/fzf/examples/key-bindings.zsh ]] \
+        && source /usr/share/doc/fzf/examples/key-bindings.zsh
+fi
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border"
 
 ##############################################
 # 🚀 zoxide (smart cd)
 ##############################################
-eval "$(zoxide init zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 ##############################################
 # 🎨 vivid LS_COLORS (for eza color theme)
 ##############################################
-export LS_COLORS="$(vivid generate nord)"
+command -v vivid >/dev/null 2>&1 && export LS_COLORS="$(vivid generate nord)"
 
 ##############################################
 # ✨ Autosuggestion Highlight Color
@@ -102,7 +120,11 @@ done
 ##############################################
 # ✨ zsh-syntax-highlighting (마지막에!)
 ##############################################
-source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ -r "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+    source "$HOMEBREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+elif [[ -r /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ]]; then
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+fi
 
 # bun completions
 [ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
