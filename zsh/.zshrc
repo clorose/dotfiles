@@ -6,11 +6,23 @@ if [[ "$OSTYPE" == darwin* ]]; then
     _ssh_add_opts=(--apple-use-keychain)
 else
     _ssh_add_opts=()
+    # Linux/WSL: ssh-agent가 없으면 기동하고 소켓을 env 파일로 재사용
+    _ssh_env="$HOME/.ssh/agent-env"
+    [[ -f "$_ssh_env" ]] && source "$_ssh_env" > /dev/null
+    ssh-add -l > /dev/null 2>&1
+    if [[ $? -eq 2 ]]; then
+        ssh-agent -s > "$_ssh_env" 2>/dev/null
+        chmod 600 "$_ssh_env"
+        source "$_ssh_env" > /dev/null
+    fi
+    unset _ssh_env
 fi
-if ssh-add "${_ssh_add_opts[@]}" ~/.ssh/id_ed25519_github > /dev/null 2>&1; then
-    echo "Welcome, ${USER}"
-else
-    echo "SSH key loading failed"
+if [[ -f ~/.ssh/id_ed25519_github ]]; then
+    if ssh-add "${_ssh_add_opts[@]}" ~/.ssh/id_ed25519_github > /dev/null 2>&1; then
+        echo "Welcome, ${USER}"
+    else
+        echo "SSH key loading failed"
+    fi
 fi
 unset _ssh_add_opts
 
