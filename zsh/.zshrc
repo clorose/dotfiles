@@ -34,6 +34,8 @@ unset _ssh_add_opts
 ##############################################
 # ⚡ Powerlevel10k Instant Prompt
 ##############################################
+# mise 등 초기화 중 출력이 있어도 p10k 경고 배너를 띄우지 않음 (출력 자체는 보임)
+typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
     source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
