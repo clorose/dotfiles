@@ -39,10 +39,11 @@ stow 없이 관리되는 것:
 
 **원칙: 코드 90%는 공통, OS 전용은 "파일"로 분리하고 로드만 분기.**
 
-- `zsh/.aliases/darwin.zsh` — `open`, `diskutil`, `defaults` 등 macOS 명령을 쓰는 alias 모음.
-  `.zshrc`가 macOS에서만 로드 (linux 전용이 필요해지면 `linux.zsh`를 만들면 같은 방식으로 동작)
+- `zsh/.aliases/darwin.zsh` — `open`, `diskutil`, `defaults` 등 macOS 명령을 쓰는 alias 모음. macOS에서만 로드
+- `zsh/.aliases/linux.zsh` — Linux 전용 alias. `open`을 `xdg-open` → `explorer.exe`(WSL) → `gio` 순으로 fallback
 - `Brewfile.darwin` — Linux brew는 cask를 지원하지 않으므로 cask는 전부 여기로
 - `zsh/.zprofile` — brew 위치를 자동 감지해서 `shellenv` 실행 (하드코딩 없음)
+- `zsh/.zshrc` — 플러그인(zsh-autosuggestions, fzf, syntax-highlighting)을 brew 경로가 없으면 배포판 패키지 경로(`/usr/share/...`)에서 로드. ssh-agent가 없는 Linux/WSL에선 자동 기동 후 소켓을 `~/.ssh/agent-env`로 재사용
 - `install.sh` — 시작 시 `uname`으로 판별해 macOS 전용 단계(cask, Apple Keychain, Alfred 안내)를 Linux에서 건너뜀
 
 ---
@@ -71,6 +72,7 @@ exec zsh
 > WSL 참고
 > - Homebrew가 없으면 스크립트가 설치를 제안합니다 (`/home/linuxbrew/.linuxbrew`)
 > - brew의 zsh를 기본 셸로 쓰려면 `/etc/shells` 등록이 필요한데, 스크립트가 처리합니다 (sudo 필요)
+> - ssh-agent는 셸 시작 시 자동 기동됩니다 — macOS Keychain처럼 매번 passphrase를 물어보지 않도록 소켓을 `~/.ssh/agent-env`에 저장해 재사용
 > - 터미널 폰트는 Windows 터미널 쪽 설정이므로 이 repo와 무관
 
 ---
@@ -111,6 +113,7 @@ ssh -T git@github.com
 |---|---|
 | alias 추가/수정 | `zsh/.aliases/` 아래 역할별 파일 (git, docker, system, search, node, python, etc) |
 | macOS 전용 alias | `zsh/.aliases/darwin.zsh` |
+| Linux/WSL 전용 alias | `zsh/.aliases/linux.zsh` |
 | 이 머신에서만 쓸 것 | `~/.aliases/local.zsh` (git 추적 안 됨) |
 | 런타임 버전 | `mise/.config/mise/config.toml` 수정 후 `mise install` |
 | 프롬프트 | `zsh/.p10k.zsh` 또는 `p10k configure` |
