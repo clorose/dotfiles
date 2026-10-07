@@ -54,3 +54,26 @@ unzd() { unzip "$1" -d "${1%.*}"; }
 # @desc: dotnet-ildasm이 netcoreapp2.2 대상 화석 툴이라 최신 런타임으로 roll-forward 필요
 # @usage: dotnet-ildasm <assembly.dll>
 alias dotnet-ildasm='DOTNET_ROLL_FORWARD=LatestMajor ~/.dotnet/tools/dotnet-ildasm'
+
+############################################################
+# 🗣️ ai-debate: Claude ↔ Codex 토론 (GLM 등 손님 참여 가능)
+############################################################
+# 설치 위치 (다른 머신에서 경로가 다르면 덮어쓰기)
+: ${AI_DEBATE_HOME:=$HOME/20_Dev/ai-debate}
+
+# @desc: AI 토론방을 만들어 토론 시작, 또는 기존 방에 이어서 말하기 (옵션은 debate --help)
+# @usage: debate "메시지" [--cwd 폴더] [--tools] [--first codex] [--max-rounds N] [--lang en] | debate --room <방ID> "메시지"
+debate() {
+    [[ -f "$AI_DEBATE_HOME/debate.mjs" ]] || { echo "❌ ai-debate 없음: $AI_DEBATE_HOME"; return 1; }
+    node "$AI_DEBATE_HOME/debate.mjs" "$@"
+}
+
+# @desc: AI 토론 웹 UI 서버를 켜고 브라우저로 연다 (Ctrl-C로 종료)
+# @usage: debate-ui [--port 4747]
+debate-ui() {
+    [[ -f "$AI_DEBATE_HOME/ui/server.mjs" ]] || { echo "❌ ai-debate 없음: $AI_DEBATE_HOME"; return 1; }
+    local port=4747
+    [[ "$1" == "--port" && -n "$2" ]] && port="$2"
+    ( sleep 1 && open "http://localhost:$port" ) &!
+    node "$AI_DEBATE_HOME/ui/server.mjs" --port "$port"
+}
