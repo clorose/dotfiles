@@ -68,12 +68,12 @@ debate() {
     node "$AI_DEBATE_HOME/debate.mjs" "$@"
 }
 
-# @desc: AI 토론 웹 UI 서버를 켜고 브라우저로 연다 (Ctrl-C로 종료)
+# @desc: AI 토론 웹 UI 서버를 켜고 브라우저로 연다 (서버 코드가 바뀌면 알아서 재시작, Ctrl-C로 종료)
 # @usage: debate-ui [--port 4747]
 debate-ui() {
     [[ -f "$AI_DEBATE_HOME/ui/server.mjs" ]] || { echo "❌ ai-debate 없음: $AI_DEBATE_HOME"; return 1; }
     local port=4747
     [[ "$1" == "--port" && -n "$2" ]] && port="$2"
     ( sleep 1 && open "http://localhost:$port" ) &!
-    node "$AI_DEBATE_HOME/ui/server.mjs" --port "$port"
+    node --watch "$AI_DEBATE_HOME/ui/server.mjs" --port "$port"
 }
