@@ -62,7 +62,7 @@ alias dotnet-ildasm='DOTNET_ROLL_FORWARD=LatestMajor ~/.dotnet/tools/dotnet-ilda
 : ${AI_DEBATE_HOME:=$HOME/20_Dev/ai-debate}
 
 # @desc: AI 토론방을 만들어 토론 시작, 또는 기존 방에 이어서 말하기 (옵션은 debate --help)
-# @usage: debate "메시지" [--cwd 폴더] [--tools] [--first codex] [--max-rounds N] [--lang en] | debate --room <방ID> "메시지"
+# @usage: debate "메시지" [--cwd 폴더] [--first codex] [--max-rounds N] [--lang en] | debate --room <방ID> "메시지"
 debate() {
     [[ -f "$AI_DEBATE_HOME/debate.mjs" ]] || { echo "❌ ai-debate 없음: $AI_DEBATE_HOME"; return 1; }
     node "$AI_DEBATE_HOME/debate.mjs" "$@"
