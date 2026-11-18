@@ -32,6 +32,7 @@ stow 없이 관리되는 것:
 | `alfred/` | Alfred 워크플로우 2개 | Alfred에서 수동 Import |
 
 `zsh/.aliases/local.zsh`는 gitignore 대상 — 머신에만 두는 개인 스크립트 자리입니다.
+git도 같은 방식으로 `~/.gitconfig.local`(repo 밖)을 `[include]`로 불러옵니다 — 파일이 없으면 무시되므로 필요한 머신에만 만들면 됩니다.
 
 ---
 
@@ -41,6 +42,9 @@ stow 없이 관리되는 것:
 
 - `zsh/.aliases/darwin.zsh` — `open`, `diskutil`, `defaults` 등 macOS 명령을 쓰는 alias 모음. macOS에서만 로드
 - `zsh/.aliases/linux.zsh` — Linux 전용 alias. `open`을 `xdg-open` → `explorer.exe`(WSL) → `gio` 순으로 fallback
+- `update` — 두 파일에 같은 이름으로 정의해 OS 상관없이 같은 명령으로 일괄 업데이트
+  - macOS: brew(cask 포함) → `mas` → mise → omz
+  - Linux: apt → brew → mise → omz
 - `Brewfile.darwin` — Linux brew는 cask를 지원하지 않으므로 cask는 전부 여기로
 - `zsh/.zprofile` — brew 위치를 자동 감지해서 `shellenv` 실행 (하드코딩 없음)
 - `zsh/.zshrc` — 플러그인(zsh-autosuggestions, fzf, syntax-highlighting)을 brew 경로가 없으면 배포판 패키지 경로(`/usr/share/...`)에서 로드. ssh-agent가 없는 Linux/WSL에선 자동 기동 후 소켓을 `~/.ssh/agent-env`로 재사용
@@ -118,6 +122,7 @@ ssh -T git@github.com
 | 런타임 버전 | `mise/.config/mise/config.toml` 수정 후 `mise install` |
 | 프롬프트 | `zsh/.p10k.zsh` 또는 `p10k configure` |
 | git 설정 | `git/.gitconfig` |
+| 이 머신에서만 쓸 git 설정 (LFS 등) | `~/.gitconfig.local` (git 추적 안 됨) |
 
 ---
 
