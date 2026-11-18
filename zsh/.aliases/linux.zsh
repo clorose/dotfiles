@@ -18,3 +18,23 @@ alias o="open ."
 
 # 하드웨어(손가락) 결함으로 발생하는 Human Error 방지용 Error Boundary
 alias "open ,"="open ."
+
+# ============================
+# 🔄 업데이트
+# ============================
+# @desc: apt + brew + mise + omz 일괄 업데이트
+# omz update는 끝나면 셸을 재시작하므로 맨 마지막에 둠
+update() {
+    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
+    brew update && brew upgrade
+    mise upgrade
+    omz update
+}
+
+# ============================
+# 💻 시스템 제어 (WSL -> Windows)
+# ============================
+# @desc: Windows 화면 끄기
+screenoff() {
+    powershell.exe -NoProfile -Command "(Add-Type '[DllImport(\"user32.dll\")] public static extern int SendMessage(int h,int m,int w,int l);' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)"
+}

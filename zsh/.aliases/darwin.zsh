@@ -48,6 +48,18 @@ _ejectvol() {
 compdef _ejectvol ejectvol
 
 # ============================
+# 🔄 업데이트
+# ============================
+# @desc: brew(cask 포함) + App Store + mise + omz 일괄 업데이트
+# omz update는 끝나면 셸을 재시작하므로 맨 마지막에 둠
+update() {
+    brew update && brew upgrade
+    mas upgrade
+    mise upgrade
+    omz update
+}
+
+# ============================
 # 🎸 Guitar (기타)
 # ============================
 # 하드웨어(손가락) 결함으로 발생하는 Human Error 방지용 Error Boundary
