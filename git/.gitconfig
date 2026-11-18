@@ -53,3 +53,7 @@
 
 [rerere]
     enabled = true
+
+# 머신별 설정 (repo 밖, 없으면 무시됨)
+[include]
+    path = ~/.gitconfig.local
