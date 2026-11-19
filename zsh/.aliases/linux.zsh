@@ -38,3 +38,10 @@ update() {
 screenoff() {
     powershell.exe -NoProfile -Command "(Add-Type '[DllImport(\"user32.dll\")] public static extern int SendMessage(int h,int m,int w,int l);' -Name a -Pas)::SendMessage(-1,0x0112,0xF170,2)"
 }
+
+# ============================
+# 📦 pnpm 전역 패키지
+# ============================
+# pnpm add -g로 설치한 명령(omniroute 등)을 찾도록 PATH 뒤에 추가 (mise의 pnpm이 우선)
+export PNPM_HOME="$HOME/.local/share/pnpm"
+path+=("$PNPM_HOME/bin")
